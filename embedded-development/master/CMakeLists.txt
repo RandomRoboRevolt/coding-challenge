@@ -1,6 +1,5 @@
-file(GLOB_RECURSE MASTER_SOURCES "src/*.*")
-
-get_target_property(MOTORDRIVER_INCLUDE_DIRS motordriver INCLUDE_DIRECTORIES)
-add_executable(master "${MASTER_SOURCES}")
-target_include_directories(master PUBLIC include "${MOTORDRIVER_INCLUDE_DIRS}")
+add_executable(master)
+target_sources(master PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp)
 target_link_libraries(master motordriver)
+install(TARGETS master
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})

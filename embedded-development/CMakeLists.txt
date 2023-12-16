@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.5)
 project(EmbeddedDevelopment)
 
+include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)
+
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -21,3 +24,4 @@ endif()
 
 add_subdirectory(motordriver)
 add_subdirectory(master)
+add_dependencies(master motordriver)
