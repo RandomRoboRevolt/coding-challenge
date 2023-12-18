@@ -17,14 +17,23 @@ set_property(TARGET motordriver PROPERTY SOVERSION ${motordriver_VERSION})
 set_property(TARGET motordriver PROPERTY
              INTERFACE_motordriver_MAJOR_VERSION "${motordriver_VERSION_MAJOR}")
 
+## Hide all symbols if not exported
+generate_export_header(motordriver)
+set_target_properties(${TARGET} PROPERTIES CXX_VISIBILITY_PRESET hidden)
+set_target_properties(${TARGET} PROPERTIES VISIBILITY_INLINES_HIDDEN 1)
+
+
+
 ## adding the source files
 target_sources(motordriver PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/motordriver.cpp)
 ## adding includes
 target_include_directories(motordriver PUBLIC
-                           "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+                           "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include;${CMAKE_CURRENT_BINARY_DIR}>"
                            "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/include>")
 ## define public headers for install
-set_target_properties(motordriver PROPERTIES PUBLIC_HEADER ${CMAKE_CURRENT_SOURCE_DIR}/include/motordriver.h)
+set(motordriver_PUBLIC_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/include/motordriver.h"
+                               "${CMAKE_CURRENT_BINARY_DIR}/motordriver_export.h")
+set_target_properties(motordriver PROPERTIES PUBLIC_HEADER "${motordriver_PUBLIC_HEADERS}")
 
 install(TARGETS motordriver
         EXPORT motordriverTargets

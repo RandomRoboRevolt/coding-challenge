@@ -3,6 +3,9 @@
 
 #include <cstdint>
 
+#include "motordriver_export.h"
+
+
 enum MotorDriverRegisters
 {
     UNDEFINED = 0x0,
@@ -33,7 +36,7 @@ const uint16_t STATUS_ERROR = 0x8000;
  * This is the main class implementing the motor driver communication
  *
  */
-class MotorDriver
+class MOTORDRIVER_EXPORT MotorDriver
 {
 public:
     /**
