@@ -4,8 +4,9 @@ project(EmbeddedDevelopment)
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 include(GenerateExportHeader)
+include(CTest)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 option(BUILD_SHARED_LIBS "When true, shared libs are build, else static" ON)
@@ -21,8 +22,25 @@ if(${BUILD_SHARED_LIBS})
   if("${isSystemDir}" STREQUAL "-1")
     set(CMAKE_INSTALL_RPATH "$ORIGIN/../${CMAKE_INSTALL_LIBDIR}")
   endif("${isSystemDir}" STREQUAL "-1")
-endif()
+endif(${BUILD_SHARED_LIBS})
+
+# Find boost::sml, if not available, fetch from upstream
+include(FetchContent)
+message(STATUS "Checking for boost::sml, will fetch if not available")
+FetchContent_Declare(
+  sml
+  GIT_REPOSITORY https://github.com/boost-ext/sml.git
+  GIT_TAG        751b6f10b73c086e0e8850a7ef5b5aea2136831b #v1.1.9
+  FIND_PACKAGE_ARGS
+)
+FetchContent_MakeAvailable(sml)
+find_package(sml CONFIG REQUIRED)
+
+
 
 add_subdirectory(motordriver)
 add_subdirectory(master)
 add_dependencies(master motordriver)
+if (BUILD_TESTING)
+  add_subdirectory(test-unit)
+endif(BUILD_TESTING)

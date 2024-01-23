@@ -1,8 +1,12 @@
+#include "statemachine.h"
+#include "motordriver.h"
+
 #include <thread>
 #include <chrono>
 #include <iostream>
+#include <memory>
 
-#include "motordriver.h"
+
 
 
 /**
@@ -10,24 +14,22 @@
  * @return
  */
 
-int main(void)
+int main()
 {
     std::cout << "Starting simulated motor driver" << std::endl;
 
 
-    MotorDriver motorDriver;
+    auto motorDriverP = std::make_shared<MotorDriver>();
+    boost::sml::sm<MotorStateMachine<MotorDriver>> stateMachine{motorDriverP};
 
     while(1)
     {
-        // Example request/response  send to the motor driver
-        uint32_t request = MotorDriverRegisters::STATUSWORD << 24 | MotorDriverRegisters::STATUSWORD;
-        uint32_t response = motorDriver.transferData(request);
+        stateMachine.process_event(StatusWordRead(motorDriverP));
 
-        std::cout << "Response to status word request: " << response << std::endl;
-
+        stateMachine.visit_current_states([](auto state) { std::cout << "I am in state: " << state.c_str() << std::endl; });
 
         // Call update to simulate motor driver doing work
-        motorDriver.update();
+        motorDriverP->update();
 
         // Sleep for 100ms to simulate cyclic control
         std::this_thread::sleep_for (std::chrono::milliseconds(100));
